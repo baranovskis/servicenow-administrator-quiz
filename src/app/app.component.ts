@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
     });
 
     const shuffled = [...this.questions].sort(() => 0.5 - Math.random());
-    shuffled.slice(0, 5).forEach(question => {
+    shuffled.slice(0, 60).forEach(question => {
       pages.push({
         elements: [{
           "name": question.id.toString(),
