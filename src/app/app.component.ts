@@ -1,49 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Model, Question } from "survey-core";
-
-const quizPages = {
-  pages: [{
-    elements: [{
-      type: "html",
-      html: "You are about to start a quiz on American history. <br>You will have 90 minutes to end the quiz.<br>Click <b>Start Quiz</b> to begin."
-    }]
-  }, {
-    elements: [{
-      type: "radiogroup",
-      name: "civilwar",
-      title: "When was the American Civil War?",
-      choices: [
-        "1796-1803", "1810-1814", "1861-1865", "1939-1945"
-      ],
-      correctAnswer: "1861-1865"
-    }]
-  }, {
-    elements: [{
-      type: "radiogroup",
-      name: "libertyordeath",
-      title: "Whose quote is this: \"Give me liberty, or give me death\"?",
-      choicesOrder: "random",
-      choices: [
-        "John Hancock", "James Madison", "Patrick Henry", "Samuel Adams"
-      ],
-      correctAnswer: "Patrick Henry"
-    }]
-  }, {
-    elements: [{
-      type: "radiogroup",
-      name: "magnacarta",
-      title: "What is Magna Carta?",
-      choicesOrder: "random",
-      choices: [
-        "The foundation of the British parliamentary system",
-        "The Great Seal of the monarchs of England",
-        "The French Declaration of the Rights of Man",
-        "The charter signed by the Pilgrims on the Mayflower"
-      ],
-      correctAnswer: "The foundation of the British parliamentary system"
-    }]
-  }]
-};
+import { HttpClient } from "@angular/common/http";
+import { take } from "rxjs";
+import { QuestionRaw, SurveyPage } from "./app.model";
 
 @Component({
   selector: 'app-root',
@@ -52,16 +11,46 @@ const quizPages = {
 })
 export class AppComponent implements OnInit {
   title: string = 'ServiceNow Administrator Quiz';
-  model!: Model
+  model: Model = new Model();
+  questions!: QuestionRaw[];
 
-  constructor(private readonly changeDetector: ChangeDetectorRef) {}
+  constructor(private readonly changeDetector: ChangeDetectorRef, private readonly httpClient: HttpClient) {}
 
   ngOnInit() {
-    this.startQuiz();
+    this.httpClient.get<QuestionRaw[]>('/assets/data.json')
+      .pipe(take(1))
+      .subscribe(response => {
+        this.questions = response;
+        this.startQuiz();
+      });
   }
 
   startQuiz(): void {
-    const quizModel = new Model(quizPages);
+    if (!this.questions) return;
+
+    const pages = new Array<SurveyPage>();
+    pages.push({
+      elements: [{
+        type: "html",
+        html: "You are about to start a quiz on American history. <br>You will have 90 minutes to end the quiz.<br>Click <b>Start Quiz</b> to begin."
+      }]
+    });
+
+    const shuffled = [...this.questions].sort(() => 0.5 - Math.random());
+    shuffled.slice(0, 5).forEach(question => {
+      pages.push({
+        elements: [{
+          "name": question.id.toString(),
+          "type": question.correctAnswers.length > 1 ? "checkbox" : "radiogroup",
+          "title":  question.title,
+          "choicesOrder": "random",
+          "correctAnswer": question.correctAnswers.length > 1 ? question.correctAnswers : question.correctAnswers[0],
+          "choices":  question.choices
+        }]
+      });
+    });
+
+    const quizModel = new Model({pages: pages});
     quizModel.showCompletedPage = false;
     quizModel.showProgressBar = "bottom";
     quizModel.showTimerPanel = "top";
@@ -94,8 +83,8 @@ export class AppComponent implements OnInit {
         let left = q.value;
         if (!Array.isArray(right)) return right == left;
         if (!Array.isArray(left)) left = [left];
-        for (let i = 0; i < left.length; i++) {
-          if (right.indexOf(left[i]) < 0) return false;
+        for (let i = 0; i < right.length; i++) {
+          if (left.indexOf(right[i]) < 0) return false;
         }
         return true;
       }
@@ -125,9 +114,18 @@ export class AppComponent implements OnInit {
 
         // TODO: Find best way how to highlight the correct answer
         sender.getAllQuestions().forEach(q => {
-          if (q.correctAnswer === options.text) {
-            options.html = '<strong>' + options.text + '</strong>';
-            return;
+          if (!Array.isArray(q.correctAnswer)) {
+            if (q.correctAnswer === options.text) {
+              options.html = '<strong>' + options.text + '</strong>';
+              return;
+            }
+          } else {
+            for (let i = 0; i < q.correctAnswer.length; i++) {
+              if (q.correctAnswer[i] === options.text) {
+                options.html = '<strong>' + options.text + '</strong>';
+                return;
+              }
+            }
           }
         })
       });
