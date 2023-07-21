@@ -12,11 +12,11 @@ import { QuestionRaw, SurveyPage } from "./app.model";
 export class AppComponent implements OnInit {
   title: string = 'ServiceNow Administrator Quiz';
   model: Model = new Model();
-  questions!: QuestionRaw[];
+  questions: QuestionRaw[] = new Array<QuestionRaw>();
 
   constructor(private readonly changeDetector: ChangeDetectorRef, private readonly httpClient: HttpClient) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.httpClient.get<QuestionRaw[]>('/assets/data.json')
       .pipe(take(1))
       .subscribe(response => {
@@ -32,12 +32,12 @@ export class AppComponent implements OnInit {
     pages.push({
       elements: [{
         type: "html",
-        html: "You are about to start a quiz on American history. <br>You will have 90 minutes to end the quiz.<br>Click <b>Start Quiz</b> to begin."
+        html: "You are about to start a quiz on ServiceNow Administrator.<br>You will have 60 minutes for 30 questions to end the quiz.<br>Click <b>Start Quiz</b> to begin."
       }]
     });
 
     const shuffled = [...this.questions].sort(() => 0.5 - Math.random());
-    shuffled.slice(0, 60).forEach(question => {
+    shuffled.slice(0, 30).forEach(question => {
       pages.push({
         elements: [{
           "name": question.id.toString(),
@@ -54,11 +54,11 @@ export class AppComponent implements OnInit {
     quizModel.showCompletedPage = false;
     quizModel.showProgressBar = "bottom";
     quizModel.showTimerPanel = "top";
-    quizModel.maxTimeToFinish = 5400;
+    quizModel.maxTimeToFinish = 60 * 60;
     quizModel.firstPageIsStarted = true;
     quizModel.startSurveyText = "Start Quiz";
 
-    quizModel.onComplete.add((sender, options) => {
+    quizModel.onComplete.add((sender, _) => {
       sender.clear(false, true);
 
       sender.mode = "display";
@@ -108,26 +108,26 @@ export class AppComponent implements OnInit {
         if (!html) {
           html = getTextHtml(text, inCorrectStr, false);
         }
+
+        if (options.element instanceof Question) {
+          const correctAnswers = options.element.correctAnswer;
+
+          if (Array.isArray(correctAnswers)) {
+            for (let i = 0; i < correctAnswers.length; i++) {
+              if (correctAnswers[i] === options.text) {
+                html = '<strong>' + options.text + '</strong>';
+              }
+            }
+          } else {
+            if (correctAnswers === options.text) {
+              html = '<strong>' + options.text + '</strong>';
+            }
+          }
+        }
+
         if (!!html) {
           options.html = html;
         }
-
-        // TODO: Find best way how to highlight the correct answer
-        sender.getAllQuestions().forEach(q => {
-          if (!Array.isArray(q.correctAnswer)) {
-            if (q.correctAnswer === options.text) {
-              options.html = '<strong>' + options.text + '</strong>';
-              return;
-            }
-          } else {
-            for (let i = 0; i < q.correctAnswer.length; i++) {
-              if (q.correctAnswer[i] === options.text) {
-                options.html = '<strong>' + options.text + '</strong>';
-                return;
-              }
-            }
-          }
-        })
       });
 
       sender.getAllQuestions().forEach(q => renderCorrectAnswer(q));
