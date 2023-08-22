@@ -32,12 +32,12 @@ export class AppComponent implements OnInit {
     pages.push({
       elements: [{
         type: "html",
-        html: "You are about to start a quiz on ServiceNow Administrator.<br>You will have 60 minutes for 30 questions to end the quiz.<br>Click <b>Start Quiz</b> to begin."
+        html: "You are about to start a quiz on ServiceNow Administrator.<br>You will have 15 minutes for 10 questions to end the quiz.<br>Click <b>Start Quiz</b> to begin."
       }]
     });
 
     const shuffled = [...this.questions].sort(() => 0.5 - Math.random());
-    shuffled.slice(0, 30).forEach(question => {
+    shuffled.slice(0, 10).forEach(question => {
       pages.push({
         elements: [{
           "name": question.id.toString(),
@@ -54,7 +54,7 @@ export class AppComponent implements OnInit {
     quizModel.showCompletedPage = false;
     quizModel.showProgressBar = "bottom";
     quizModel.showTimerPanel = "top";
-    quizModel.maxTimeToFinish = 60 * 60;
+    quizModel.maxTimeToFinish = 15 * 60;
     quizModel.firstPageIsStarted = true;
     quizModel.startSurveyText = "Start Quiz";
 
