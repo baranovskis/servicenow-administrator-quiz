@@ -3,7 +3,6 @@ import { Model, Question } from "survey-core";
 import { HttpClient } from "@angular/common/http";
 import { take } from "rxjs";
 import { QuestionRaw, SurveyPage } from "./app.model";
-import { themeJson } from "./app.theme";
 
 @Component({
   selector: 'app-root',
@@ -11,7 +10,7 @@ import { themeJson } from "./app.theme";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title: string = 'ServiceNow Administrator Quiz';
+  title: string = 'ServiceNow Administrator (CSA) Quiz';
   model: Model = new Model();
   questions: QuestionRaw[] = new Array<QuestionRaw>();
 
@@ -54,7 +53,6 @@ export class AppComponent implements OnInit {
     });
 
     const quizModel = new Model({pages: pages});
-    quizModel.applyTheme(themeJson);
 
     quizModel.showCompletedPage = false;
     quizModel.showProgressBar = "bottom";
