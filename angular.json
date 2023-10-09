@@ -26,7 +26,7 @@
             ],
             "styles": [
               "src/styles.css",
-              "node_modules/survey-core/modern.fontless.min.css"
+              "node_modules/survey-core/defaultV2.min.css"
             ],
             "scripts": []
           },
@@ -95,5 +95,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

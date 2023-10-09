@@ -3,6 +3,7 @@ import { Model, Question } from "survey-core";
 import { HttpClient } from "@angular/common/http";
 import { take } from "rxjs";
 import { QuestionRaw, SurveyPage } from "./app.model";
+import { themeJson } from "./app.theme";
 
 @Component({
   selector: 'app-root',
@@ -43,17 +44,21 @@ export class AppComponent implements OnInit {
           "name": question.id.toString(),
           "type": question.correctAnswers.length > 1 ? "checkbox" : "radiogroup",
           "title":  question.title,
+          "description": question.category,
           "choicesOrder": "random",
           "correctAnswer": question.correctAnswers.length > 1 ? question.correctAnswers : question.correctAnswers[0],
-          "choices":  question.choices
+          "choices":  question.choices,
+          "maxSelectedChoices": question.correctAnswers.length > 1 ? question.correctAnswers.length : 1,
         }]
       });
     });
 
     const quizModel = new Model({pages: pages});
+    quizModel.applyTheme(themeJson);
+
     quizModel.showCompletedPage = false;
     quizModel.showProgressBar = "bottom";
-    quizModel.showTimerPanel = "top";
+    quizModel.showTimerPanel = "none";
     quizModel.maxTimeToFinish = 15 * 60;
     quizModel.firstPageIsStarted = true;
     quizModel.startSurveyText = "Start Quiz";
@@ -65,7 +70,6 @@ export class AppComponent implements OnInit {
       sender.questionsOnPageMode = "singlePage";
       sender.showNavigationButtons = "none";
       sender.showProgressBar = "off";
-      sender.showTimerPanel = "none";
       sender.maxTimeToFinishPage = 0;
       sender.maxTimeToFinish = 0;
 

@@ -1,12 +1,9 @@
 :host {
   --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-  --main-color: #1976d2;
-  --text-color: #333;
+  --text-color: rgba(255, 255, 255, 0.78);
   --body-container-background-color: transparent;
-  --progress-text-color: #333;
+  --progress-text-color: rgba(255, 255, 255, 0.78);
   --answer-background-color: transparent;
-  --border-color: rgb(25, 118, 210, 0.3);
-  --radio-checked-color: var(--main-color);
 
   font-family: var(--font-family);
   font-size: 16px;
@@ -32,12 +29,12 @@ p {
 a,
 a:visited,
 a:hover {
-  color: #1976d2;
+  color: rgba(255, 152, 20, 1);
   text-decoration: none;
 }
 
 a:hover {
-  color: #125699;
+  color: rgba(255, 170, 24, 1);
 }
 
 svg.material-icons {
@@ -53,8 +50,7 @@ svg.material-icons {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: #1976d2;
-  color: white;
+  background-color: rgba(48, 48, 48, 1);
   font-weight: 600;
 }
 
@@ -75,6 +71,7 @@ footer {
   display: flex;
   align-items: center;
   line-height: 20px;
+  padding-bottom: 10px;
 }
 
 footer a {
@@ -90,13 +87,15 @@ footer a {
   padding: 3px 10px;
   border: 1px solid rgba(27,31,35,.2);
   border-radius: 3px;
-  background-image: linear-gradient(-180deg,#fafbfc,#eff3f6 90%);
   margin-left: 4px;
   font-weight: 600;
+  background-color: rgba(48, 48, 48, 1);
+  color: rgba(255, 152, 20, 1);
 }
 
 .github-star-badge:hover {
-  background-image: linear-gradient(-180deg,#f0f3f6,#e6ebf1 90%);
+  color: rgba(255, 152, 20, 1);
+  background-color: rgba(48, 48, 48, 1);
   border-color: rgba(27,31,35,.35);
   background-position: -.5em;
 }
@@ -105,6 +104,7 @@ footer a {
   height: 16px;
   width: 16px;
   margin-right: 4px;
+  fill: var(--text-color);
 }
 
 .spacer {
